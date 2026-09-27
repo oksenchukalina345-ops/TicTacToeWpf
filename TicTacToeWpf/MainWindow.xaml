@@ -1,0 +1,62 @@
+﻿ <Window x:Class="TicTacToeWpf.MainWindow"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:vm="clr-namespace:TicTacToeWpf.ViewModels"
+xmlns:sys="clr-namespace:System;assembly=mscorlib"
+xmlns:models="clr-namespace:TicTacToeWpf.Models"
+Title="Хрестики-Нулики" Height="450" Width="350"
+WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="DifficultyEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:GameDifficulty"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Перемикач складності ШІ -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+            <TextBlock Text="Рівень: " VerticalAlignment="Center" FontWeight="Bold"/>
+            <ComboBox ItemsSource="{Binding Source={StaticResource DifficultyEnum}}"
+                  SelectedItem="{Binding SelectedDifficulty}" Width="120" Margin="5,0,0,0"/>
+        </StackPanel>
+
+        <!-- Ігрове поле (UniformGrid 3x3) -->
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Cells}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="3" Columns="3"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding DisplayValue}"
+                        FontSize="32" FontWeight="Bold" Margin="2"
+                        Command="{Binding DataContext.MakeMoveCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        CommandParameter="{Binding}"
+                        IsEnabled="{Binding IsEmpty}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Статус гри -->
+        <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" 
+               HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" Margin="0,10"/>
+
+        <!-- Кнопка скидання -->
+        <Button Grid.Row="3" Content="Нова гра" 
+            Command="{Binding NewGameCommand}" Height="35" FontSize="14"/>
+    </Grid>
+</Window>
